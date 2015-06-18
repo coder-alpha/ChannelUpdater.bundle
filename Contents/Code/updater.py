@@ -121,7 +121,8 @@ def updateold(title, feed, ver):
 				version_result_str = title
 				url = 'https://github.com/{0}/archive/{1}.zip'.format(common.GITHUB_REPOSITORY, tag)
 				ver = getOnlyVersionNumber(title)
-				oc.add(DirectoryObject(key=Callback(update, url=url, ver=ver), title='Channel version: {0}'.format(version_result_str), summary='Click to update to '+ver+' version. - ' + summary, thumb=R(ICON_UPDATER)))
+				oc.add(DirectoryObject(key=Callback(update, url=url, ver=ver), title='Plugin version: {0}'.format(ver), summary='Click to update to '+ver+' version. - ' + summary, thumb=R(ICON_UPDATER)))
+			oc.objects.sort(key=lambda obj: obj.title, reverse=True)
 			oc.add(DirectoryObject(key=Callback(updateold,title='Older Releases (pre '+version_result_str+')', feed=FEED_URL+'?after='+tag, ver=ver), title='Older Releases (pre '+version_result_str+')', summary='Update to an Older Release', thumb=R(ICON_NEXT)))
 			return oc
 		else:
