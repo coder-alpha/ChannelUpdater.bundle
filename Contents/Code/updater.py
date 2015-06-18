@@ -19,7 +19,7 @@ def menu(title):
 	ver, version_result, version_result_str, version_result_summary, tag = test_version()
 	url = 'https://github.com/{0}/archive/{1}.zip'.format(common.GITHUB_REPOSITORY, tag)
 	oc.add(DirectoryObject(key=Callback(update, url=url, ver=ver), title='Plugin version: {0}'.format(version_result_str), summary=version_result_summary, thumb=get_test_thumb(version_result)))
-	oc.add(DirectoryObject(key=Callback(updateold,title='Older Releases (pre '+version_result_str+')', feed=FEED_URL, ver=ver), title= 'Pre '+version_result_str + ' Releases', summary='Update to an Older Release. Please note an older release might not have updater support.', thumb=R(ICON_RELEASES)))
+	oc.add(DirectoryObject(key=Callback(updateold,title='Older Releases (Pre '+ver+')', feed=FEED_URL, ver=ver), title= 'Pre '+ ver + ' Releases', summary='Update to an Older Release. Please note an older release might not have updater support.', thumb=R(ICON_RELEASES)))
 	
 	return oc
 
