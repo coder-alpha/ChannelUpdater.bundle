@@ -1,0 +1,1 @@
+[	{		"id": "rootAccess",		"label": "Plugin has root acccess (Linux)",		"type": "bool",		"default": "false"    },]

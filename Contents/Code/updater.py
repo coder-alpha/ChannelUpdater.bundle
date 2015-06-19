@@ -54,48 +54,52 @@ def update_available():
 def update(url, ver):
 		
 	if ver:
-		msg = 'Plugin updated to version {0}'.format(ver)
-		msgH = 'Update successful'
-		try:
-			zip_data = Archive.ZipFromURL(url)
-			
-			# to overcome write permission move existing files to a temp Dir
-			rootTempDir = Core.storage.join_path(tempfile.gettempdir(), 'tempDir')
-			Core.storage.ensure_dirs(rootTempDir)
-			
-			for name in zip_data.Names():
-				data	= zip_data[name]
-				parts   = name.split('/')
-				shifted = Core.storage.join_path(*parts[1:])
-				full	= Core.storage.join_path(Core.bundle_path, shifted)
-				tempDir = Core.storage.join_path(rootTempDir, shifted)
+		if Platform.OS <> 'Linux' or (Platform.OS == 'Linux' and Prefs['rootAccess']):
+			msg = 'Plugin updated to version {0}'.format(ver)
+			msgH = 'Update successful'
+			try:
+				zip_data = Archive.ZipFromURL(url)
+				
+				# to overcome write permission move existing files to a temp Dir
+				rootTempDir = Core.storage.join_path(tempfile.gettempdir(), 'tempDir')
+				Core.storage.ensure_dirs(rootTempDir)
+				
+				for name in zip_data.Names():
+					data	= zip_data[name]
+					parts   = name.split('/')
+					shifted = Core.storage.join_path(*parts[1:])
+					full	= Core.storage.join_path(Core.bundle_path, shifted)
+					tempDir = Core.storage.join_path(rootTempDir, shifted)
 
-				if '/.' in name:
-					continue
+					if '/.' in name:
+						continue
 
-				if name.endswith('/'):
-					Core.storage.ensure_dirs(full)
-					Core.storage.ensure_dirs(tempDir)
-				else:
-					if Core.storage.file_exists(full):
-						shutil.move(full, tempDir)
-						Core.storage.save(full, data)
+					if name.endswith('/'):
+						Core.storage.ensure_dirs(full)
+						Core.storage.ensure_dirs(tempDir)
 					else:
-						Core.storage.save(full, data)
-		except Exception as exception:
-			msg = 'Error: ' + str(exception)
+						if Core.storage.file_exists(full):
+							shutil.move(full, tempDir)
+							Core.storage.save(full, data)
+						else:
+							Core.storage.save(full, data)
+			except Exception as exception:
+				msg = 'Error: ' + str(exception)
+				msgH = 'Update failed'
+			# Ignore temp Dir error
+			try:
+				del rootTempDir
+				#Log("delete------" + str(rootTempDir))
+			except Exception as exception:
+				msg = msg	
+			# Ignore zip deletion error
+			try:
+				del zip_data
+			except Exception as exception:
+				msg = msg
+		else:
+			msg = 'Plugin updating requires root access !'
 			msgH = 'Update failed'
-		# Ignore temp Dir error
-		try:
-			del rootTempDir
-			#Log("delete------" + str(rootTempDir))
-		except Exception as exception:
-			msg = msg	
-		# Ignore zip deletion error
-		try:
-			del zip_data
-		except Exception as exception:
-			msg = msg
 		return ObjectContainer(header=msgH, message=msg)
 	else:
 		return ObjectContainer(header='Update failed', message='Version not found !')
